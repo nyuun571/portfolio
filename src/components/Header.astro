@@ -1,0 +1,273 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { siteConfig } from '../config/site';
+
+const pathname = Astro.url.pathname;
+---
+
+<header class="site-header" id="site-header">
+  <div class="container header-inner">
+    <!-- Logo -->
+    <a href="/" class="logo" aria-label="ホームへ">
+      <div class="logo-avatar">
+        <img src={siteConfig.avatar} alt={siteConfig.name} />
+      </div>
+      <span class="logo-name">{siteConfig.name}</span>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="nav" aria-label="メインナビゲーション">
+      {siteConfig.nav.map(link => (
+        <a
+          href={link.href}
+          class="nav-link"
+          aria-current={
+            link.href === '/'
+              ? pathname === '/' ? 'page' : undefined
+              : pathname.startsWith(link.href) ? 'page' : undefined
+          }
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <!-- Actions -->
+    <div class="header-right">
+      <ThemeToggle />
+      <button
+        class="hamburger"
+        id="hamburger"
+        aria-label="メニューを開く"
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+      >
+        <span class="ham-bar"></span>
+        <span class="ham-bar"></span>
+        <span class="ham-bar"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile nav drawer -->
+  <div class="mobile-nav" id="mobile-nav" aria-hidden="true">
+    <nav>
+      {siteConfig.nav.map(link => (
+        <a
+          href={link.href}
+          class="mobile-nav-link"
+          aria-current={
+            link.href === '/'
+              ? pathname === '/' ? 'page' : undefined
+              : pathname.startsWith(link.href) ? 'page' : undefined
+          }
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</header>
+
+<div style="height: var(--header-h)"></div>
+
+<style>
+/* ── Base ─────────────────────────────────── */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-h);
+  z-index: 200;
+  background: transparent;
+  transition: background var(--t-slow), box-shadow var(--t-slow), border-color var(--t-slow);
+}
+
+.site-header.scrolled {
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ダークモードは[data-theme="dark"]で--bg-primaryが自動的に切り替わるため追加指定不要 */
+
+.header-inner {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-lg);
+}
+
+/* ── Logo ─────────────────────────────────── */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.logo-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--accent-teal);
+  flex-shrink: 0;
+  transition: box-shadow var(--t-base);
+}
+
+.logo:hover .logo-avatar {
+  box-shadow: var(--shadow-glow-teal);
+}
+
+.logo-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* ── Desktop Nav ──────────────────────────── */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-link {
+  padding: 0.4em 0.95em;
+  border-radius: var(--r-full);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--t-fast);
+  position: relative;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background: rgba(168,216,216,0.12);
+}
+
+.nav-link[aria-current="page"] {
+  color: var(--text-primary);
+  background: rgba(168,216,216,0.18);
+  font-weight: 600;
+}
+
+/* ── Right area ───────────────────────────── */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  flex-shrink: 0;
+}
+
+/* ── Hamburger ────────────────────────────── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 6px;
+  transition: border-color var(--t-fast);
+}
+
+.hamburger:hover { border-color: var(--accent-teal); }
+
+.ham-bar {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--text-secondary);
+  border-radius: 2px;
+  transition: transform var(--t-base), opacity var(--t-base);
+}
+
+.hamburger[aria-expanded="true"] .ham-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger[aria-expanded="true"] .ham-bar:nth-child(2) {
+  opacity: 0;
+}
+.hamburger[aria-expanded="true"] .ham-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile nav drawer ────────────────────── */
+.mobile-nav {
+  display: none;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height var(--t-slow);
+}
+
+.mobile-nav.open {
+  max-height: 300px;
+}
+
+.mobile-nav nav {
+  display: flex;
+  flex-direction: column;
+  padding: var(--sp-md);
+  gap: var(--sp-xs);
+}
+
+.mobile-nav-link {
+  padding: 0.75em 1em;
+  border-radius: var(--r-md);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--t-fast);
+  text-align: center;
+}
+
+.mobile-nav-link:hover,
+.mobile-nav-link[aria-current="page"] {
+  background: rgba(168,216,216,0.12);
+  color: var(--text-primary);
+}
+
+/* ── Responsive ───────────────────────────── */
+@media (max-width: 640px) {
+  .nav { display: none; }
+  .hamburger { display: flex; }
+  .mobile-nav { display: block; }
+}
+</style>
+
+<script>
+// Scroll effect
+const header = document.getElementById('site-header');
+const onScroll = () => {
+  header?.classList.toggle('scrolled', window.scrollY > 20);
+};
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+// Mobile menu
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobile-nav');
+
+hamburger?.addEventListener('click', () => {
+  const open = hamburger.getAttribute('aria-expanded') === 'true';
+  hamburger.setAttribute('aria-expanded', String(!open));
+  mobileNav?.setAttribute('aria-hidden', String(open));
+  mobileNav?.classList.toggle('open', !open);
+});
+</script>

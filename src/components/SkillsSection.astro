@@ -1,0 +1,88 @@
+---
+import { siteConfig } from '../config/site';
+
+// Group skills by category
+const grouped = siteConfig.skills.reduce<Record<string, string[]>>((acc, skill) => {
+  if (!acc[skill.category]) acc[skill.category] = [];
+  acc[skill.category].push(skill.name);
+  return acc;
+}, {});
+
+const categories = Object.entries(grouped);
+
+// Color variants for categories (cycles through)
+const colorVariants = ['', 'tag-pink', 'tag-lavender', '', 'tag-pink', 'tag-lavender'];
+---
+
+<section class="skills section" id="skills">
+  <div class="container">
+    <div class="skills-header reveal">
+      <p class="section-label">Learning</p>
+      <h2 class="section-title">触れている技術</h2>
+      <p class="skills-sub">学習中・使ったことがある技術をまとめています。</p>
+    </div>
+
+    <div class="skills-grid">
+      {categories.map(([category, skills], i) => (
+        <div class={`skill-group reveal reveal-delay-${Math.min(i + 1, 4)}`}>
+          <h3 class="skill-category">{category}</h3>
+          <div class="skill-tags">
+            {skills.map(skill => (
+              <span class={`tag ${colorVariants[i % colorVariants.length]}`}>
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.skills { background: var(--bg-primary); }
+
+.skills-header {
+  margin-bottom: var(--sp-2xl);
+}
+
+.skills-sub {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-top: var(--sp-sm);
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--sp-lg);
+}
+
+.skill-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-lg);
+  transition: transform var(--t-base), box-shadow var(--t-base);
+}
+
+.skill-group:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+}
+
+.skill-category {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--sp-md);
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-sm);
+}
+</style>

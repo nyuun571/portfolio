@@ -1,0 +1,78 @@
+---
+// ThemeToggle.astro — 現在のモードを示すアイコンを表示
+// ライトモード中: ☀️ 太陽 / ダークモード中: 🌙 月
+---
+
+<button
+  id="theme-toggle"
+  class="theme-toggle"
+  aria-label="テーマを切り替える"
+  title="テーマを切り替える"
+>
+  <!-- Sun icon (ライトモード時に表示) -->
+  <svg id="icon-sun" class="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="5"/>
+    <line x1="12" y1="1"  x2="12" y2="3"/>
+    <line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22"  x2="5.64" y2="5.64"/>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1"  y1="12" x2="3"  y2="12"/>
+    <line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </svg>
+  <!-- Moon icon (ダークモード時に表示) -->
+  <svg id="icon-moon" class="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+  </svg>
+</button>
+
+<style>
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-md);
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  transition: all var(--t-base);
+}
+
+.theme-toggle:hover {
+  background: rgba(168,216,216,0.12);
+  border-color: var(--accent-teal);
+  color: var(--text-primary);
+}
+
+.theme-icon { display: none; }
+</style>
+
+<script>
+// JavaScriptでアイコンを制御（Astroのスコープ付きCSSの制限を回避）
+const btn     = document.getElementById('theme-toggle');
+const sunIcon  = document.getElementById('icon-sun');
+const moonIcon = document.getElementById('icon-moon');
+
+function applyIcons(isDark: boolean) {
+  if (!sunIcon || !moonIcon) return;
+  (sunIcon  as HTMLElement).style.display = isDark ? 'none'  : 'block';
+  (moonIcon as HTMLElement).style.display = isDark ? 'block' : 'none';
+}
+
+// ページ読み込み時に現在のモードを反映
+const initDark = document.documentElement.getAttribute('data-theme') === 'dark';
+applyIcons(initDark);
+
+// クリックでモード切替
+btn?.addEventListener('click', () => {
+  const html    = document.documentElement;
+  const current = html.getAttribute('data-theme') ?? 'light';
+  const next    = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  applyIcons(next === 'dark');
+});
+</script>

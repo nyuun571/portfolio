@@ -1,17 +1,137 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/Hero.astro';
+import SkillsSection from '../components/SkillsSection.astro';
+import BlogCard from '../components/BlogCard.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { getCollection } from 'astro:content';
 
+// Blog: ピン留め優先 → 日付順、最大3件
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const latestPosts = allPosts
+  .sort((a, b) => {
+    if (a.data.featured && !b.data.featured) return -1;
+    if (!a.data.featured && b.data.featured) return 1;
+    return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+  })
+  .slice(0, 3);
+
+// Works: ピン留め優先 → 日付順、最大3件
+const allWorks = await getCollection('works');
+const latestWorks = allWorks
+  .sort((a, b) => {
+    if (a.data.featured && !b.data.featured) return -1;
+    if (!a.data.featured && b.data.featured) return 1;
+    return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+  })
+  .slice(0, 3);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout>
+  <Header />
+  <Hero />
+  <SkillsSection />
+
+  <!-- Latest Blog -->
+  <section class="section latest-blog" id="latest-blog">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-label">Blog</p>
+          <h2 class="section-title">最新の記事</h2>
+        </div>
+        <a href="/blog" class="btn btn-outline view-all">
+          すべて見る
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+      <div class="cards-grid">
+        {latestPosts.map((post, i) => (
+          <div class={`card-wrap reveal reveal-delay-${i + 1}`}>
+            <BlogCard
+              id={post.id}
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              tags={post.data.tags}
+              thumbnail={post.data.thumbnail}
+              featured={post.data.featured}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Works -->
+  <section class="section latest-works" id="latest-works">
+    <div class="container">
+      <div class="section-head reveal">
+        <div>
+          <p class="section-label">Works</p>
+          <h2 class="section-title">制作したもの</h2>
+        </div>
+        <a href="/works" class="btn btn-outline view-all">
+          すべて見る
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+      <div class="cards-grid">
+        {latestWorks.map((work, i) => (
+          <div class={`card-wrap reveal reveal-delay-${i + 1}`}>
+            <ProductCard
+              id={work.id}
+              title={work.data.title}
+              description={work.data.description}
+              pubDate={work.data.pubDate}
+              category={work.data.category}
+              tags={work.data.tags}
+              github={work.data.github}
+              demo={work.data.demo}
+              status={work.data.status}
+              thumbnail={work.data.thumbnail}
+              featured={work.data.featured}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: var(--sp-xl);
+  gap: var(--sp-md);
+}
+
+/* カードグリッド：高さ揃え */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--sp-lg);
+  align-items: stretch;
+}
+
+/* ラッパーをflexにしてカードをグリッドセルいっぱいに引き伸ばす */
+.card-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.latest-blog  { background: var(--bg-secondary); }
+.latest-works { background: var(--bg-primary); }
+
+@media (max-width: 480px) { .view-all { display: none; } }
+</style>

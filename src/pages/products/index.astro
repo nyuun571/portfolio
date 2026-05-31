@@ -1,0 +1,240 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getCollection } from 'astro:content';
+
+const allProducts = await getCollection('products');
+const sorted = allProducts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// ピン留め / 通常に分離
+const pinnedProducts  = sorted.filter(p => p.data.featured);
+const regularProducts = sorted.filter(p => !p.data.featured);
+
+// ユニークカテゴリー
+const allCategories = [...new Set(sorted.map(p => p.data.category))];
+---
+
+<BaseLayout
+  title="プロダクト"
+  description="個人開発・制作したプロダクト・ツール・Webアプリの一覧です。"
+>
+  <Header />
+
+  <main class="page-main">
+    <!-- Page Header -->
+    <div class="page-hero">
+      <div class="container page-hero-inner">
+        <p class="section-label">Products</p>
+        <h1 class="page-title">プロダクト</h1>
+        <p class="page-desc">個人で開発したプロダクト・ツール・Webアプリの一覧です。</p>
+      </div>
+    </div>
+
+    <div class="container page-content">
+
+      <!-- ── ピン留めプロダクト ── -->
+      {pinnedProducts.length > 0 && (
+        <section class="pinned-section reveal" id="pinned-products">
+          <div class="pinned-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M16 3a1 1 0 0 1 .78.375l4 5A1 1 0 0 1 20 10h-1v5a1 1 0 0 1-.293.707L17 17.414V20a1 1 0 0 1-1.707.707l-3-3H9a1 1 0 0 1-1-1v-3.586l-1.707-1.707A1 1 0 0 1 6 11V6a1 1 0 0 1 1-1h9zm0 2H8v2.586l1.707 1.707A1 1 0 0 1 10 10v3h2.586l1.707 1.707A.997.997 0 0 1 14 15v2.586l.293-.293A1 1 0 0 1 15 17v-5h-1a1 1 0 0 1-.78-1.625L15.72 7H16V5z"/>
+            </svg>
+            ピン留め
+          </div>
+          <div class="pinned-grid">
+            {pinnedProducts.map(product => (
+              <ProductCard
+                id={product.id}
+                title={product.data.title}
+                description={product.data.description}
+                pubDate={product.data.pubDate}
+                category={product.data.category}
+                tags={product.data.tags}
+                github={product.data.github}
+                demo={product.data.demo}
+                status={product.data.status}
+                thumbnail={product.data.thumbnail}
+                featured={true}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <!-- ── カテゴリーフィルター ── -->
+      {allCategories.length > 0 && (
+        <div class="cat-filter reveal" role="navigation" aria-label="カテゴリーフィルター">
+          <button class="tag tag-lavender cat-btn active" data-cat="all">すべて</button>
+          {allCategories.map(cat => (
+            <button class="tag tag-lavender cat-btn" data-cat={cat}>{cat}</button>
+          ))}
+        </div>
+      )}
+
+      <!-- ── 通常プロダクトグリッド ── -->
+      {regularProducts.length > 0 && (
+        <div class="products-grid" id="products-grid">
+          {regularProducts.map((product, i) => (
+            <div
+              class={`product-item reveal reveal-delay-${Math.min((i % 3) + 1, 4)}`}
+              data-category={product.data.category}
+            >
+              <ProductCard
+                id={product.id}
+                title={product.data.title}
+                description={product.data.description}
+                pubDate={product.data.pubDate}
+                category={product.data.category}
+                tags={product.data.tags}
+                github={product.data.github}
+                demo={product.data.demo}
+                status={product.data.status}
+                thumbnail={product.data.thumbnail}
+                featured={false}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {sorted.length === 0 && (
+        <div class="empty-state">
+          <p class="empty-icon">🛠️</p>
+          <p class="empty-text">まだプロダクトがありません。</p>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+.page-main {
+  padding-top: var(--header-h);
+  min-height: 100dvh;
+}
+
+.page-hero {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding-block: var(--sp-2xl) var(--sp-3xl);
+}
+
+.page-hero-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+}
+
+.page-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.page-desc {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.page-content {
+  padding-block: var(--sp-2xl) var(--sp-3xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xl);
+}
+
+/* ── Pinned section ── */
+.pinned-section {
+  background: rgba(168,216,216,0.06);
+  border: 1px solid rgba(168,216,216,0.25);
+  border-radius: var(--r-lg);
+  padding: var(--sp-lg);
+}
+
+.pinned-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-teal);
+  margin-bottom: var(--sp-md);
+}
+
+.pinned-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--sp-md);
+}
+
+/* ── Category filter ── */
+.cat-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-sm);
+}
+
+.cat-btn {
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.cat-btn.active {
+  background: var(--accent-lavender);
+  color: #2A2060;
+  border-color: var(--accent-lavender);
+  font-weight: 700;
+}
+
+[data-theme="dark"] .cat-btn.active { color: #1A2C30; }
+
+/* ── Products grid ── */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--sp-lg);
+}
+
+.product-item.hidden { display: none; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: var(--sp-3xl);
+}
+
+.empty-icon { font-size: 3rem; margin-bottom: var(--sp-md); }
+.empty-text { color: var(--text-muted); }
+</style>
+
+<script>
+// カテゴリーフィルター — 通常プロダクトのみ（ピン留めは常に表示）
+const btns = document.querySelectorAll<HTMLButtonElement>('.cat-btn');
+const items = document.querySelectorAll<HTMLElement>('.product-item');
+
+btns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const cat = btn.dataset.cat ?? 'all';
+    btns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    items.forEach(item => {
+      if (cat === 'all') {
+        item.classList.remove('hidden');
+      } else {
+        item.classList.toggle('hidden', item.dataset.category !== cat);
+      }
+    });
+  });
+});
+</script>

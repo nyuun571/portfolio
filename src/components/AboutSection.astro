@@ -1,0 +1,122 @@
+---
+import { siteConfig } from '../config/site';
+---
+
+<section class="about section" id="about">
+  <div class="container">
+    <div class="about-inner reveal">
+
+      <!-- Left: Avatar -->
+      <div class="about-avatar-wrap">
+        <img
+          src={siteConfig.avatar}
+          alt={siteConfig.name}
+          class="about-avatar"
+          loading="lazy"
+        />
+      </div>
+
+      <!-- Right: Text -->
+      <div class="about-text">
+        <p class="section-label">About</p>
+        <h2 class="section-title">私について</h2>
+        <p class="about-bio">{siteConfig.bio}</p>
+        <p class="about-handle">{siteConfig.handle}</p>
+
+        <div class="about-stats">
+          <div class="stat">
+            <span class="stat-num">3+</span>
+            <span class="stat-label">ブログ記事</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">3+</span>
+            <span class="stat-label">Works</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num">{siteConfig.skills.length}+</span>
+            <span class="stat-label">技術スタック</span>
+          </div>
+        </div>
+
+        <a href={siteConfig.introBlogHref} class="btn btn-outline">
+          自己紹介記事を読む
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+.about { background: var(--bg-secondary); }
+
+.about-inner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--sp-3xl);
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .about-inner {
+    grid-template-columns: 1fr;
+    gap: var(--sp-xl);
+    text-align: center;
+    justify-items: center;
+  }
+}
+
+.about-avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: var(--r-xl);
+  object-fit: cover;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.about-bio {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  margin-bottom: var(--sp-sm);
+}
+
+.about-handle {
+  font-size: 0.85rem;
+  color: var(--accent-teal);
+  font-weight: 600;
+  margin-bottom: var(--sp-xl);
+}
+
+.about-stats {
+  display: flex;
+  gap: var(--sp-xl);
+  margin-bottom: var(--sp-xl);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) { .about-stats { justify-content: center; } }
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.stat-num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+</style>

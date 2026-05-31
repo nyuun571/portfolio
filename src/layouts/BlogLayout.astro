@@ -1,0 +1,130 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+  thumbnail?: string;
+}
+
+const { title, description, pubDate, tags = [], thumbnail } = Astro.props;
+
+const dateStr = pubDate.toLocaleDateString('ja-JP', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout title={title} description={description} ogImage={thumbnail}>
+  <Header />
+  <main class="blog-main">
+    <!-- Hero -->
+    <div class="blog-hero" style={thumbnail ? `background-image: url(${thumbnail})` : ''}>
+      <div class="blog-hero-overlay">
+        <div class="container blog-hero-inner">
+          <a href="/blog" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M13 8H3M7 4l-4 4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            ブログ一覧に戻る
+          </a>
+          <div class="blog-tags">
+            {tags.map(tag => <span class="tag">{tag}</span>)}
+          </div>
+          <h1 class="blog-title">{title}</h1>
+          <time class="blog-date" datetime={pubDate.toISOString()}>{dateStr}</time>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="container blog-body">
+      <article class="prose">
+        <slot />
+      </article>
+
+      <div class="blog-footer">
+        <a href="/blog" class="btn btn-outline">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M13 8H3M7 4l-4 4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          ブログ一覧に戻る
+        </a>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+.blog-main {
+  padding-top: var(--header-h);
+  min-height: 100dvh;
+}
+
+.blog-hero {
+  background-color: var(--bg-secondary);
+  background-size: cover;
+  background-position: center;
+  padding-block: var(--sp-3xl);
+  border-bottom: 1px solid var(--border);
+}
+
+.blog-hero-overlay {
+  background: transparent;
+}
+
+
+
+.blog-hero-inner {
+  max-width: 780px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-md);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  transition: color var(--t-fast);
+}
+
+.back-link:hover { color: var(--accent-teal); }
+
+.blog-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-sm);
+}
+
+.blog-title {
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.blog-date {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.blog-body {
+  padding-block: var(--sp-2xl) var(--sp-3xl);
+  max-width: 780px;
+}
+
+.blog-footer {
+  margin-top: var(--sp-2xl);
+  padding-top: var(--sp-xl);
+  border-top: 1px solid var(--border);
+}
+</style>
