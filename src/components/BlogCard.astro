@@ -59,18 +59,6 @@ const excerpt =
       </div>
     )
   }
-  {
-    thumbnail ? (
-      <div class="card-thumb">
-        <img src={thumbnail} alt={title} loading="lazy" />
-      </div>
-    ) : (
-      <div class="card-thumb card-thumb-plain" aria-hidden="true">
-        <div class="thumb-decoration">✍️</div>
-      </div>
-    )
-  }
-
   <div class="card-body">
     <div class="card-tags">
       {tags.slice(0, 3).map((tag) => <span class="tag">{tag}</span>)}

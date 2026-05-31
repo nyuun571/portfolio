@@ -77,19 +77,6 @@ const emoji = categoryEmoji[category] ?? "✨";
       </div>
     )
   }
-  <!-- Thumbnail -->
-  {
-    thumbnail ? (
-      <div class="card-thumb">
-        <img src={thumbnail} alt={title} loading="lazy" />
-      </div>
-    ) : (
-      <div class="card-thumb card-thumb-plain" aria-hidden="true">
-        <span class="thumb-emoji">{emoji}</span>
-      </div>
-    )
-  }
-
   <div class="card-body">
     <!-- Meta row -->
     <div class="card-meta-row">

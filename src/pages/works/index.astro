@@ -1,11 +1,11 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import ProductCard from '../../components/ProductCard.astro';
-import { getCollection } from 'astro:content';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import ProductCard from "../../components/ProductCard.astro";
+import { getCollection } from "astro:content";
 
-const allWorks = await getCollection('works');
+const allWorks = await getCollection("works");
 const sorted = allWorks.sort((a, b) => {
   // ピン留め優先 → 日付順
   if (a.data.featured && !b.data.featured) return -1;
@@ -14,14 +14,17 @@ const sorted = allWorks.sort((a, b) => {
 });
 
 // ピン留めのみ（上部に表示）
-const pinnedWorks = sorted.filter(w => w.data.featured);
+const pinnedWorks = sorted.filter((w) => w.data.featured);
 // 全件（ピン留めも含む）
 const allSorted = sorted;
 
-const allCategories = [...new Set(sorted.map(w => w.data.category))];
+const allCategories = [...new Set(sorted.map((w) => w.data.category))];
 ---
 
-<BaseLayout title="Works" description="個人開発・制作したプロダクト・ツール・Webアプリの一覧です。">
+<BaseLayout
+  title="Works"
+  description="個人開発・制作したプロダクト・ツール・Webアプリの一覧です。"
+>
   <Header />
 
   <main class="page-main">
@@ -29,23 +32,81 @@ const allCategories = [...new Set(sorted.map(w => w.data.category))];
       <div class="container page-hero-inner">
         <p class="section-label">Works</p>
         <h1 class="page-title">Works</h1>
-        <p class="page-desc">個人で開発したプロダクト・ツール・Webアプリの一覧です。</p>
+        <p class="page-desc">
+          個人で開発したプロダクト・ツール・Webアプリの一覧です。
+        </p>
       </div>
     </div>
 
     <div class="container page-content">
-
       <!-- ── ピン留め ── -->
-      {pinnedWorks.length > 0 && (
-        <section class="pinned-section reveal" id="pinned-works">
-          <div class="pinned-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M16 3a1 1 0 0 1 .78.375l4 5A1 1 0 0 1 20 10h-1v5a1 1 0 0 1-.293.707L17 17.414V20a1 1 0 0 1-1.707.707l-3-3H9a1 1 0 0 1-1-1v-3.586l-1.707-1.707A1 1 0 0 1 6 11V6a1 1 0 0 1 1-1h9z"/>
-            </svg>
-            Pinned
+      {
+        pinnedWorks.length > 0 && (
+          <section class="pinned-section reveal" id="pinned-works">
+            <div class="pinned-label">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M16,9V4l1,0c0.55,0,1-0.45,1-1v0c0-0.55-0.45-1-1-1H7C6.45,2,6,2.45,6,3v0 c0,0.55,0.45,1,1,1l1,0v5c0,1.66-1.34,3-3,3h0v2h5.97v7l1,1l1-1v-7H19v-2h0C17.34,12,16,10.66,16,9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+              Pinned
+            </div>
+            <div class="pinned-grid">
+              {pinnedWorks.map((work) => (
+                <ProductCard
+                  id={work.id}
+                  title={work.data.title}
+                  description={work.data.description}
+                  pubDate={work.data.pubDate}
+                  category={work.data.category}
+                  tags={work.data.tags}
+                  github={work.data.github}
+                  demo={work.data.demo}
+                  status={work.data.status}
+                  thumbnail={work.data.thumbnail}
+                  featured={true}
+                />
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <!-- ── カテゴリーフィルター ── -->
+      {
+        allCategories.length > 0 && (
+          <div
+            class="cat-filter reveal"
+            role="navigation"
+            aria-label="カテゴリーフィルター"
+          >
+            <button class="tag cat-btn active" data-cat="all">
+              すべて
+            </button>
+            {allCategories.map((cat) => (
+              <button class="tag cat-btn" data-cat={cat}>
+                {cat}
+              </button>
+            ))}
           </div>
-          <div class="pinned-grid">
-            {pinnedWorks.map(work => (
+        )
+      }
+
+      <!-- ── 全Works（ピン留め含む） ── -->
+      <div class="works-grid" id="works-grid">
+        {
+          allSorted.map((work, i) => (
+            <div
+              class={`work-item reveal reveal-delay-${Math.min((i % 3) + 1, 4)}`}
+              data-category={work.data.category}
+            >
               <ProductCard
                 id={work.id}
                 title={work.data.title}
@@ -57,53 +118,21 @@ const allCategories = [...new Set(sorted.map(w => w.data.category))];
                 demo={work.data.demo}
                 status={work.data.status}
                 thumbnail={work.data.thumbnail}
-                featured={true}
+                featured={work.data.featured}
               />
-            ))}
-          </div>
-        </section>
-      )}
-
-      <!-- ── カテゴリーフィルター ── -->
-      {allCategories.length > 0 && (
-        <div class="cat-filter reveal" role="navigation" aria-label="カテゴリーフィルター">
-          <button class="tag cat-btn active" data-cat="all">すべて</button>
-          {allCategories.map(cat => (
-            <button class="tag cat-btn" data-cat={cat}>{cat}</button>
-          ))}
-        </div>
-      )}
-
-      <!-- ── 全Works（ピン留め含む） ── -->
-      <div class="works-grid" id="works-grid">
-        {allSorted.map((work, i) => (
-          <div
-            class={`work-item reveal reveal-delay-${Math.min((i % 3) + 1, 4)}`}
-            data-category={work.data.category}
-          >
-            <ProductCard
-              id={work.id}
-              title={work.data.title}
-              description={work.data.description}
-              pubDate={work.data.pubDate}
-              category={work.data.category}
-              tags={work.data.tags}
-              github={work.data.github}
-              demo={work.data.demo}
-              status={work.data.status}
-              thumbnail={work.data.thumbnail}
-              featured={work.data.featured}
-            />
-          </div>
-        ))}
+            </div>
+          ))
+        }
       </div>
 
-      {allWorks.length === 0 && (
-        <div class="empty-state">
-          <p class="empty-icon">🛠️</p>
-          <p class="empty-text">まだ作品がありません。</p>
-        </div>
-      )}
+      {
+        allWorks.length === 0 && (
+          <div class="empty-state">
+            <p class="empty-icon">🛠️</p>
+            <p class="empty-text">まだ作品がありません。</p>
+          </div>
+        )
+      }
     </div>
   </main>
 
@@ -111,95 +140,127 @@ const allCategories = [...new Set(sorted.map(w => w.data.category))];
 </BaseLayout>
 
 <style>
-.page-main { padding-top: var(--header-h); min-height: 100dvh; }
+  .page-main {
+    padding-top: var(--header-h);
+    min-height: 100dvh;
+  }
 
-.page-hero {
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  padding-block: var(--sp-2xl) var(--sp-3xl);
-}
+  .page-hero {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding-block: var(--sp-2xl) var(--sp-3xl);
+  }
 
-.page-hero-inner { display: flex; flex-direction: column; gap: var(--sp-sm); }
+  .page-hero-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-sm);
+  }
 
-.page-title {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-}
+  .page-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
 
-.page-desc { color: var(--text-muted); font-size: 1rem; }
+  .page-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+  }
 
-.page-content {
-  padding-block: var(--sp-2xl) var(--sp-3xl);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-xl);
-}
+  .page-content {
+    padding-block: var(--sp-2xl) var(--sp-3xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-xl);
+  }
 
-/* Pinned */
-.pinned-section {
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: var(--sp-lg);
-  background: var(--bg-secondary);
-}
+  /* Pinned */
+  .pinned-section {
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: var(--sp-lg);
+    background: var(--bg-secondary);
+  }
 
-.pinned-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4em;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent-teal);
-  margin-bottom: var(--sp-md);
-}
+  .pinned-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-teal);
+    margin-bottom: var(--sp-md);
+  }
 
-.pinned-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--sp-md);
-}
+  .pinned-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--sp-md);
+  }
 
-/* Filter */
-.cat-filter { display: flex; flex-wrap: wrap; gap: var(--sp-sm); }
+  /* Filter */
+  .cat-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-sm);
+  }
 
-.cat-btn { background: none; font-family: inherit; cursor: pointer; transition: all var(--t-fast); }
-.cat-btn.active {
-  background: var(--accent-teal);
-  color: #1A2C30;
-  border-color: var(--accent-teal);
-  font-weight: 700;
-}
+  .cat-btn {
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--t-fast);
+  }
+  .cat-btn.active {
+    background: var(--accent-teal);
+    color: #1a2c30;
+    border-color: var(--accent-teal);
+    font-weight: 700;
+  }
 
-/* Grid */
-.works-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--sp-lg);
-}
+  /* Grid */
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--sp-lg);
+  }
 
-.work-item.hidden { display: none; }
+  .work-item.hidden {
+    display: none;
+  }
 
-/* Empty */
-.empty-state { text-align: center; padding: var(--sp-3xl); }
-.empty-icon { font-size: 3rem; margin-bottom: var(--sp-md); }
-.empty-text { color: var(--text-muted); }
+  /* Empty */
+  .empty-state {
+    text-align: center;
+    padding: var(--sp-3xl);
+  }
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: var(--sp-md);
+  }
+  .empty-text {
+    color: var(--text-muted);
+  }
 </style>
 
 <script>
-const btns = document.querySelectorAll<HTMLButtonElement>('.cat-btn');
-const items = document.querySelectorAll<HTMLElement>('.work-item');
+  const btns = document.querySelectorAll<HTMLButtonElement>(".cat-btn");
+  const items = document.querySelectorAll<HTMLElement>(".work-item");
 
-btns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const cat = btn.dataset.cat ?? 'all';
-    btns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    items.forEach(item => {
-      item.classList.toggle('hidden', cat !== 'all' && item.dataset.category !== cat);
+  btns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const cat = btn.dataset.cat ?? "all";
+      btns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      items.forEach((item) => {
+        item.classList.toggle(
+          "hidden",
+          cat !== "all" && item.dataset.category !== cat,
+        );
+      });
     });
   });
-});
 </script>
