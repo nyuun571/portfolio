@@ -15,7 +15,7 @@ featured: false
 
 ## なぜ Astro を選んだか
 
-このポートフォリオには [Astro](https://astro.build) を使っています。Astroを選んだ理由は静的なサイトに向いているというのと、[チュートリアル](https://docs.astro.build/ja/tutorial/0-introduction/)をやってみて気にったからです。
+このポートフォリオには [Astro](https://astro.build) を使っています。Astroを選んだ理由は静的なサイトに向いているというのと、[チュートリアル](https://docs.astro.build/ja/tutorial/0-introduction/)をやってみて気にいったからです。
 
 ## 今後
 
