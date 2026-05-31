@@ -1,11 +1,11 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import BlogCard from '../../components/BlogCard.astro';
-import { getCollection } from 'astro:content';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import BlogCard from "../../components/BlogCard.astro";
+import { getCollection } from "astro:content";
 
-const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const allPosts = await getCollection("blog", ({ data }) => !data.draft);
 const sorted = allPosts.sort((a, b) => {
   if (a.data.featured && !b.data.featured) return -1;
   if (!a.data.featured && b.data.featured) return 1;
@@ -13,14 +13,17 @@ const sorted = allPosts.sort((a, b) => {
 });
 
 // ピン留めのみ（上部表示）
-const pinnedPosts = sorted.filter(p => p.data.featured);
+const pinnedPosts = sorted.filter((p) => p.data.featured);
 // 全件（ピン留め含む）
 const allSorted = sorted;
 
-const allTags = [...new Set(sorted.flatMap(p => p.data.tags))];
+const allTags = [...new Set(sorted.flatMap((p) => p.data.tags))];
 ---
 
-<BaseLayout title="Blog" description="開発・デザイン・日々の気づきをまとめたブログです。">
+<BaseLayout
+  title="Blog"
+  description="開発・デザイン・日々の気づきをまとめたブログです。"
+>
   <Header />
 
   <main class="page-main">
@@ -33,18 +36,70 @@ const allTags = [...new Set(sorted.flatMap(p => p.data.tags))];
     </div>
 
     <div class="container page-content">
-
       <!-- ── ピン留め ── -->
-      {pinnedPosts.length > 0 && (
-        <section class="pinned-section reveal" id="pinned-posts">
-          <div class="pinned-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M16 3a1 1 0 0 1 .78.375l4 5A1 1 0 0 1 20 10h-1v5a1 1 0 0 1-.293.707L17 17.414V20a1 1 0 0 1-1.707.707l-3-3H9a1 1 0 0 1-1-1v-3.586l-1.707-1.707A1 1 0 0 1 6 11V6a1 1 0 0 1 1-1h9z"/>
-            </svg>
-            Pinned
+      {
+        pinnedPosts.length > 0 && (
+          <section class="pinned-section reveal" id="pinned-posts">
+            <div class="pinned-label">
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M16,9V4l1,0c0.55,0,1-0.45,1-1v0c0-0.55-0.45-1-1-1H7C6.45,2,6,2.45,6,3v0 c0,0.55,0.45,1,1,1l1,0v5c0,1.66-1.34,3-3,3h0v2h5.97v7l1,1l1-1v-7H19v-2h0C17.34,12,16,10.66,16,9z"
+                  fill-rule="evenodd"
+                />
+              </svg>
+              Pinned
+            </div>
+            <div class="pinned-grid">
+              {pinnedPosts.map((post) => (
+                <BlogCard
+                  id={post.id}
+                  title={post.data.title}
+                  description={post.data.description}
+                  pubDate={post.data.pubDate}
+                  tags={post.data.tags}
+                  thumbnail={post.data.thumbnail}
+                  featured={true}
+                />
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <!-- ── タグフィルター ── -->
+      {
+        allTags.length > 0 && (
+          <div
+            class="tag-filter reveal"
+            role="navigation"
+            aria-label="タグフィルター"
+          >
+            <button class="tag tag-filter-btn active" data-tag="all">
+              すべて
+            </button>
+            {allTags.map((tag) => (
+              <button class="tag tag-filter-btn" data-tag={tag}>
+                {tag}
+              </button>
+            ))}
           </div>
-          <div class="pinned-grid">
-            {pinnedPosts.map(post => (
+        )
+      }
+
+      <!-- ── 全記事（ピン留め含む） ── -->
+      <div class="posts-grid" id="posts-grid">
+        {
+          allSorted.map((post, i) => (
+            <div
+              class={`post-item reveal reveal-delay-${Math.min((i % 3) + 1, 4)}`}
+              data-tags={JSON.stringify(post.data.tags)}
+            >
               <BlogCard
                 id={post.id}
                 title={post.data.title}
@@ -52,49 +107,21 @@ const allTags = [...new Set(sorted.flatMap(p => p.data.tags))];
                 pubDate={post.data.pubDate}
                 tags={post.data.tags}
                 thumbnail={post.data.thumbnail}
-                featured={true}
+                featured={post.data.featured}
               />
-            ))}
-          </div>
-        </section>
-      )}
-
-      <!-- ── タグフィルター ── -->
-      {allTags.length > 0 && (
-        <div class="tag-filter reveal" role="navigation" aria-label="タグフィルター">
-          <button class="tag tag-filter-btn active" data-tag="all">すべて</button>
-          {allTags.map(tag => (
-            <button class="tag tag-filter-btn" data-tag={tag}>{tag}</button>
-          ))}
-        </div>
-      )}
-
-      <!-- ── 全記事（ピン留め含む） ── -->
-      <div class="posts-grid" id="posts-grid">
-        {allSorted.map((post, i) => (
-          <div
-            class={`post-item reveal reveal-delay-${Math.min((i % 3) + 1, 4)}`}
-            data-tags={JSON.stringify(post.data.tags)}
-          >
-            <BlogCard
-              id={post.id}
-              title={post.data.title}
-              description={post.data.description}
-              pubDate={post.data.pubDate}
-              tags={post.data.tags}
-              thumbnail={post.data.thumbnail}
-              featured={post.data.featured}
-            />
-          </div>
-        ))}
+            </div>
+          ))
+        }
       </div>
 
-      {sorted.length === 0 && (
-        <div class="empty-state">
-          <p class="empty-icon">✍️</p>
-          <p class="empty-text">まだ記事がありません。</p>
-        </div>
-      )}
+      {
+        sorted.length === 0 && (
+          <div class="empty-state">
+            <p class="empty-icon">✍️</p>
+            <p class="empty-text">まだ記事がありません。</p>
+          </div>
+        )
+      }
     </div>
   </main>
 
@@ -102,108 +129,137 @@ const allTags = [...new Set(sorted.flatMap(p => p.data.tags))];
 </BaseLayout>
 
 <style>
-.page-main { padding-top: var(--header-h); min-height: 100dvh; }
+  .page-main {
+    padding-top: var(--header-h);
+    min-height: 100dvh;
+  }
 
-.page-hero {
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  padding-block: var(--sp-2xl) var(--sp-3xl);
-}
+  .page-hero {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    padding-block: var(--sp-2xl) var(--sp-3xl);
+  }
 
-.page-hero-inner { display: flex; flex-direction: column; gap: var(--sp-sm); }
+  .page-hero-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-sm);
+  }
 
-.page-title {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-}
+  .page-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
 
-.page-desc { color: var(--text-muted); font-size: 1rem; }
+  .page-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+  }
 
-.page-content {
-  padding-block: var(--sp-2xl) var(--sp-3xl);
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-xl);
-}
+  .page-content {
+    padding-block: var(--sp-2xl) var(--sp-3xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-xl);
+  }
 
-/* Pinned */
-.pinned-section {
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: var(--sp-lg);
-  background: var(--bg-secondary);
-}
+  /* Pinned */
+  .pinned-section {
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: var(--sp-lg);
+    background: var(--bg-secondary);
+  }
 
-.pinned-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4em;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent-teal);
-  margin-bottom: var(--sp-md);
-}
+  .pinned-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-teal);
+    margin-bottom: var(--sp-md);
+  }
 
-.pinned-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--sp-md);
-  align-items: stretch;
-}
+  .pinned-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--sp-md);
+    align-items: stretch;
+  }
 
-/* Filter */
-.tag-filter { display: flex; flex-wrap: wrap; gap: var(--sp-sm); }
+  /* Filter */
+  .tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-sm);
+  }
 
-.tag-filter-btn { background: none; font-family: inherit; cursor: pointer; transition: all var(--t-fast); }
-.tag-filter-btn.active {
-  background: var(--accent-teal);
-  color: #1A2C30;
-  border-color: var(--accent-teal);
-  font-weight: 700;
-}
+  .tag-filter-btn {
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--t-fast);
+  }
+  .tag-filter-btn.active {
+    background: var(--accent-teal);
+    color: #1a2c30;
+    border-color: var(--accent-teal);
+    font-weight: 700;
+  }
 
-/* Grid */
-.posts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: var(--sp-lg);
-  align-items: stretch;
-}
+  /* Grid */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--sp-lg);
+    align-items: stretch;
+  }
 
-/* ラッパーをflexにしてカードを高さいっぱいに伸ばす */
-.post-item {
-  display: flex;
-  flex-direction: column;
-}
+  /* ラッパーをflexにしてカードを高さいっぱいに伸ばす */
+  .post-item {
+    display: flex;
+    flex-direction: column;
+  }
 
-.post-item.hidden { display: none; }
+  .post-item.hidden {
+    display: none;
+  }
 
-/* Empty */
-.empty-state { text-align: center; padding: var(--sp-3xl); }
-.empty-icon { font-size: 3rem; margin-bottom: var(--sp-md); }
-.empty-text { color: var(--text-muted); }
+  /* Empty */
+  .empty-state {
+    text-align: center;
+    padding: var(--sp-3xl);
+  }
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: var(--sp-md);
+  }
+  .empty-text {
+    color: var(--text-muted);
+  }
 </style>
 
 <script>
-const btns = document.querySelectorAll<HTMLButtonElement>('.tag-filter-btn');
-const items = document.querySelectorAll<HTMLElement>('.post-item');
+  const btns = document.querySelectorAll<HTMLButtonElement>(".tag-filter-btn");
+  const items = document.querySelectorAll<HTMLElement>(".post-item");
 
-btns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    const tag = btn.dataset.tag ?? 'all';
-    btns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    items.forEach(item => {
-      if (tag === 'all') {
-        item.classList.remove('hidden');
-      } else {
-        const tags: string[] = JSON.parse(item.dataset.tags ?? '[]');
-        item.classList.toggle('hidden', !tags.includes(tag));
-      }
+  btns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tag = btn.dataset.tag ?? "all";
+      btns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      items.forEach((item) => {
+        if (tag === "all") {
+          item.classList.remove("hidden");
+        } else {
+          const tags: string[] = JSON.parse(item.dataset.tags ?? "[]");
+          item.classList.toggle("hidden", !tags.includes(tag));
+        }
+      });
     });
   });
-});
 </script>
