@@ -29,7 +29,7 @@ export const siteConfig = {
   /** サイトタイトル (ブラウザタブに表示) */
   title: "Portfolio",
   /** サイト説明 (SEO用) */
-  description: "とある学生のポートフォリオサイトです。つくったものとかブログとかを載せてます。",
+  description: "nyuunのポートフォリオサイトです。つくったものとかブログとかを載せてます。",
   /** アバター画像パス (public/ ディレクトリ相対) */
   avatar: "/assets/my_icon.JPG",
   /** ヒーローのキャッチコピー */
@@ -84,6 +84,7 @@ export const siteConfig = {
     { name: "JavaScript", category: "使ったことがある" },
     { name: "Astro", category: "使ったことがある" },
     { name: "Python", category: "使ったことがある" },
+    { name: "Zig", category: "使ったことがある" },
 
     // ── 学習中 ─────────────────────────────────────────
     // 今まさに勉強していることを書いてください
@@ -93,10 +94,8 @@ export const siteConfig = {
 
     // ── 興味がある ─────────────────────────────────────
     // いずれ触りたい・気になっている技術でOKです
-    { name: "Zig", category: "興味がある" },
     { name: "React", category: "興味がある" },
     { name: "Moonbit", category: "興味がある" },
-    { name: "WebAssembly", category: "興味がある" },
   ] as Skill[],
 
   // ── ナビゲーション ────────────────────────────────────
