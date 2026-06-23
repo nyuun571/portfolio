@@ -55,6 +55,7 @@ sequenceDiagram
             Bot->>DB: 個人の支出としても記録
         end
         Bot->>Requester: 承認完了のPush通知
+```
 
   #### データベース設計 (ER図)
 
