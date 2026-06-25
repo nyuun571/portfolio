@@ -1,7 +1,7 @@
 ---
 title: "ポートフォリオを作りました"
 description: "Astroでポートフォリオサイトを作りました。"
-pubDate: 2025-01-15
+pubDate: 2025-05-20
 tags: ["日記", "自己紹介", "Astro"]
 featured: false
 ---
