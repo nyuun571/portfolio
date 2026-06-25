@@ -6,7 +6,7 @@ category: "Webサイト"
 tags: ["Astro", "ポートフォリオ"]
 demo: "https://portfolio.nyaudyf.workers.dev/blog/"
 status: "completed"
-featured: true
+featured: false
 ---
 
 # このポートフォリオサイト
@@ -23,7 +23,7 @@ Astro フレームワークを使って構築した個人ポートフォリオ�
 ## 技術スタック
 
 - **フレームワーク**: Astro
-- **デプロイ**: Cloudflare Workers
+- **デプロイ**: Cloudflare Pages
 
 ## 工夫した点
 

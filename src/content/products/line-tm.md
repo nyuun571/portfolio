@@ -1,9 +1,9 @@
 ---
-title: "LINE 多機能Bot"
+title: "LINE 時間割管理Bot"
 description: "Pythonで作ったLINEボット。LINEのチャットやGoogle Sheetsから時間割やタスクの管理ができます。"
 pubDate: 2025-05-31
 category: "ツール"
-tags: ["Python", "LINE Bot", "Bot", "API", "ショートカット", "ラズパイ"]
+tags: ["Python", "LINE Bot", "ショートカット"]
 github: "https://github.com/nyuun571/LINE__bot_time_manager"
 status: "completed"
 featured: false
