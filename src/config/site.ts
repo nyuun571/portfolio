@@ -79,6 +79,7 @@ export const siteConfig = {
     // ── 使ったことがある ──────────────────────────────────
     // 触ったことがある・勉強中のものを正直に書いてください
     // 自信がなくても「学習中」として載せることは全然OKです
+    { name: "C", category: "使ったことがある" },
     { name: "HTML", category: "使ったことがある" },
     { name: "CSS", category: "使ったことがある" },
     { name: "JavaScript", category: "使ったことがある" },
